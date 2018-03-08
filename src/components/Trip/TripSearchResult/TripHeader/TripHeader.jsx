@@ -8,20 +8,28 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
+
+import getTripSorterTheme from '../../../../common/theme';
+
+const muiTheme = getTripSorterTheme();
+
+
 const propTypes = {
   trips: PropTypes.any,
   fetchTrips: PropTypes.func.isRequired,
   searchCriteria: PropTypes.any
 };
 
-const tripSorterStyle = cxs({
+const tripHeaderStyle = cxs({
   marginBottom: '20px'
 });
 
-class Sorter extends Component {
+// Component of the button to sort the trips by cheapest or fastest
+class SorterButton extends Component {
 
   constructor(props) {
     super(props);
+
     this.sortByDuration = this.sortByDuration.bind(this);
     this.sortByCost = this.sortByCost.bind(this);
   }
@@ -39,7 +47,7 @@ class Sorter extends Component {
 
   render() {
     return <IconMenu
-      iconButtonElement={<IconButton><MoreVertIcon/></IconButton>}
+      iconButtonElement={<IconButton><MoreVertIcon color={muiTheme.palette.alternateTextColor} /></IconButton>}
       targetOrigin={{horizontal: 'right', vertical: 'top'}}
       anchorOrigin={{horizontal: 'right', vertical: 'top'}}
     >
@@ -47,27 +55,30 @@ class Sorter extends Component {
       <MenuItem primaryText="Sort by fastest" onClick={this.sortByDuration}/>
     </IconMenu>
   }
-};
+}
 
 
-Sorter.muiName = 'IconMenu';
+SorterButton.muiName = 'IconMenu';
 
-// Component which contains the search trips results
-function TripSorter ({trips: {totalTrips, searchCriteria}, fetchTrips}) {
+// Component containing the sorter button and the number of result.
+function TripHeader ({trips: {totalTrips, searchCriteria}, fetchTrips}) {
 
-  const title = totalTrips ? `${totalTrips} trips match your search`: 'Please enter cities to search trips';
+  const title = totalTrips ? `${totalTrips} trips match your search`: totalTrips === 0 ? 'No trip match your search': 'Please enter cities to search trips';
 
   return (
-    <div className={tripSorterStyle}>
+    <div className={tripHeaderStyle}>
       <AppBar
         title={title}
         showMenuIconButton={false}
-        iconElementRight={totalTrips && <Sorter fetchTrips={fetchTrips} searchCriteria={searchCriteria} />}
+        iconElementRight={totalTrips ? <SorterButton fetchTrips={fetchTrips} searchCriteria={searchCriteria} /> : null}
       />
     </div>
   );
 }
 
-TripSorter.propTypes = propTypes;
+TripHeader.propTypes = propTypes;
+TripHeader.contextTypes = {
+  muiTheme: PropTypes.object.isRequired
+};
 
-export default TripSorter;
+export default TripHeader;

@@ -1,9 +1,7 @@
 import {connect} from 'react-redux';
 
-
 import Trip from './Trip';
 import {fetchTrips} from '../../services/actions';
-
 
 
 function mapStateToProps(state) {
@@ -18,6 +16,7 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
+// Container of the trip page to add trips data and fetching trips service props.
 const TripContainer = connect(
   mapStateToProps,
   mapDispatchToProps

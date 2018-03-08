@@ -3,15 +3,20 @@ import PropTypes from 'prop-types';
 import cxs from 'cxs';
 
 import {TripList} from './TripList';
-import {TripSorter} from './TripSorter';
+import {TripHeader} from './TripHeader';
+
+import getTripSorterTheme from '../../../common/theme';
+
+const muiTheme = getTripSorterTheme();
 
 const propTypes = {
-  trips: PropTypes.any
+  trips: PropTypes.any.isRequired,
+  fetchTrips: PropTypes.func.isRequired
 };
 
 const tripSearchResultStyle = cxs({
   marginLeft: '200px',
-  backgroundColor: '#fff',
+  backgroundColor: muiTheme.palette.canvasColor,
   padding: '25px 10px'
 });
 
@@ -20,14 +25,22 @@ function TripSearchResult({trips, fetchTrips}) {
 
   return (
     <div className={tripSearchResultStyle}>
-      <TripSorter trips={trips} fetchTrips={fetchTrips} />
+      <TripHeader trips={trips} fetchTrips={fetchTrips} />
       {trips.items && trips.items.map((trip, index) =>
-        <TripList cost={trip.cost} duration={trip.duration} steps={trip.steps} key={index} />
+        <TripList
+          key={index}
+          cost={trip.cost}
+          currency={trips.currency}
+          duration={trip.duration}
+          steps={trip.steps} />
       )}
     </div>
   );
 }
 
 TripSearchResult.propTypes = propTypes;
+TripSearchResult.contextTypes = {
+  muiTheme: PropTypes.object.isRequired
+};
 
 export default TripSearchResult;

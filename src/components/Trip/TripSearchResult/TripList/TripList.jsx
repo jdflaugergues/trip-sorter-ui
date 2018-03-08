@@ -2,18 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cxs from 'cxs';
 import moment from 'moment';
-import Paper from 'material-ui/Paper';
-import Divider from 'material-ui/Divider';
+import getSymbolFromCurrency from 'currency-symbol-map';
 
 import IconButton from 'material-ui/IconButton';
+import Divider from 'material-ui/Divider';
+import Paper from 'material-ui/Paper';
 import Train from 'material-ui/svg-icons/maps/train';
 import Bus from 'material-ui/svg-icons/maps/directions-bus';
 import Car from 'material-ui/svg-icons/maps/directions-car';
 
-import {colors, font} from '../../../../common/theme';
+import getTripSorterTheme from '../../../../common/theme';
+
+const muiTheme = getTripSorterTheme();
 
 const tripListPropTypes = {
   cost: PropTypes.number.isRequired,
+  currency: PropTypes.string.isRequired,
   duration: PropTypes.number.isRequired,
   steps: PropTypes.any.isRequired
 };
@@ -22,29 +26,28 @@ const styles = {
   trip: {
     padding: '20px',
     margin: '10px',
-    marginTop: '0',
-    color: colors.primaryColor
+    marginTop: '0'
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
-    fontSize: font.titleSize,
+    fontSize: muiTheme.typography.fontStyleTitleSize,
     paddingBottom: '10px',
     ' div': {
       padding: '10px 20px'
     }
   },
   cost: {
-    fontWeight: 'bold',
-    backgroundColor: 'rgb(0, 188, 212)',
+    fontWeight: muiTheme.typography.fontWeightBold,
+    backgroundColor: muiTheme.palette.primary1Color,
     borderRadius: '3px'
   },
   duration: {
-    color: colors.secondaryColor
+    color: muiTheme.palette.accent3Color
   },
   connection: {
-    fontSize: font.headerSize,
-    fontWeight: 'bold',
+    fontSize: muiTheme.typography.fontStyleHeaderSize,
+    fontWeight: muiTheme.typography.fontWeightBold,
     paddingBottom: '10px'
   },
   icon: {
@@ -65,15 +68,15 @@ const styles = {
     marginLeft: 'auto'
   },
   stepCities: {
-    fontSize: font.headerSize
+    fontSize: muiTheme.typography.fontStyleHeaderSize
   },
   stepReference: {
-    color: colors.secondaryColor
+    color: muiTheme.palette.accent3Color
   }
 };
 
 function twoDigits(n) {
-  return (n < 10) && '0' + n || n;
+  return (n < 10) ? '0' + n : n;
 }
 
 function formatDuration(duration) {
@@ -90,6 +93,10 @@ function getTransportIcon(transport) {
   }
 }
 
+const contextTypes = {
+  muiTheme: PropTypes.object.isRequired
+};
+
 const stepPropTypes = {
   transport: PropTypes.string.isRequired,
   departure: PropTypes.string.isRequired,
@@ -97,10 +104,13 @@ const stepPropTypes = {
   reference: PropTypes.string.isRequired,
   duration: PropTypes.number.isRequired,
   cost: PropTypes.number.isRequired,
+  currencySymbol: PropTypes.string.isRequired,
   discount: PropTypes.number.isRequired
 };
 
-function Step({transport, departure, arrival, reference, duration, cost, discount}) {
+// Component of a trip step.
+function Step({transport, departure, arrival, reference, duration, cost, currencySymbol, discount}) {
+
   return (
     <div className={cxs(styles.stepLayout)}>
       <IconButton iconStyle={styles.icon}>{getTransportIcon(transport)}</IconButton>
@@ -109,7 +119,7 @@ function Step({transport, departure, arrival, reference, duration, cost, discoun
         <div className={cxs(styles.stepReference)}>{reference}</div>
       </div>
       <div className={cxs(styles.stepLastItem)}>
-        <div className={cxs(styles.stepCities)}>{cost - cost * (discount / 100)} €</div>
+        <div className={cxs(styles.stepCities)}>{cost - cost * (discount / 100)} {currencySymbol}</div>
         <div className={cxs(styles.stepReference)}>{formatDuration(duration)}</div>
       </div>
     </div>
@@ -117,18 +127,20 @@ function Step({transport, departure, arrival, reference, duration, cost, discoun
 }
 
 Step.propTypes = stepPropTypes;
+Step.contextTypes = contextTypes;
 
 // Component which contains the search trips results
-function TripList({cost, duration, steps}) {
+function TripList({cost, currency, duration, steps}) {
+  const currencySymbol = getSymbolFromCurrency(currency);
 
   return (
     <Paper className={cxs(styles.trip)} zDepth={3}>
       <div className={cxs(styles.header)}>
-        <div className={cxs(styles.cost)}>{cost} €</div>
+        <div className={cxs(styles.cost)}>{cost} {currencySymbol}</div>
         <div className={cxs(styles.duration)}>
           {formatDuration(duration)} </div>
       </div>
-      {steps.length > 1 && <div className={cxs(styles.connection)}>{steps.length - 1} connections</div>}
+      {steps.length > 1 ? <div className={cxs(styles.connection)}>{steps.length - 1} connection{steps.length > 2 && 's'}</div> : null}
       {steps.map((step, index) =>
         <div key={index}>
           <Step
@@ -138,6 +150,7 @@ function TripList({cost, duration, steps}) {
             reference={step.reference}
             duration={step.duration}
             cost={step.cost}
+            currencySymbol={currencySymbol}
             discount={step.discount}>
           </Step>
           <Divider />
@@ -148,5 +161,6 @@ function TripList({cost, duration, steps}) {
 }
 
 TripList.propTypes = tripListPropTypes;
+TripList.contextTypes = contextTypes;
 
 export default TripList;

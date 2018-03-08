@@ -16,6 +16,7 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
+// Container of the search bar component to add cities list data and fetching cities service props.
 const SearchBarContainer = connect(
   mapStateToProps,
   mapDispatchToProps

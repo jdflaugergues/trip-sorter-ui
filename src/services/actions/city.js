@@ -32,7 +32,8 @@ export function fetchCities(searchWord) {
 
     dispatch(requestCities(searchWord));
     const term = searchWord.trim().toLowerCase();
-    const resourcePath = `https://trip-sort-api.herokuapp.com/api/trip-sorter/cities?searchWord=${term}`;
+    // const resourcePath = `https://trip-sorter-api.herokuapp.com/api/trip-sorter/cities?searchWord=${term}`;
+    const resourcePath = `/api/trip-sorter/cities?searchWord=${term}`;
 
     return fetch(resourcePath)
       .then(response => {

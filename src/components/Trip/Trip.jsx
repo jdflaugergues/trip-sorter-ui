@@ -24,24 +24,16 @@ const mainContentStyle = cxs({
 });
 
 
-// Component which contains the content of the application
+// Component of the trip page.
 class Trip extends Component {
 
-  constructor(props) {
-    super(props);
-  }
-
-  componentWillMount() {
-    this.props.fetchTrips();
-  }
-
   render() {
-    const {trips, ...fetchingProps} = this.props;
+    const {trips, fetchTrips} = this.props;
     return (
       <div className={mainContentStyle}>
-        <SearchBarContainer searchCriteria={trips.searchCriteria} {...fetchingProps} />
-        <Filter searchCriteria={trips.searchCriteria} {...fetchingProps} />
-        <TripSearchResult trips={trips} {...fetchingProps} />
+        <SearchBarContainer searchCriteria={trips.searchCriteria} fetchTrips={fetchTrips} />
+        <Filter searchCriteria={trips.searchCriteria} fetchTrips={fetchTrips} />
+        <TripSearchResult {...this.props} />
       </div>
     );
   }

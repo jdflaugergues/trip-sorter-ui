@@ -56,8 +56,13 @@ export function fetchTrips(searchCriteria) {
 
     const {from, to, sort = 'duration', transports = [], nbConnections = ''} = lastSearchCriteria || searchCriteria;
 
+    if (!from || !to) {
+      return;
+    }
+
     dispatch(requestCities({from, to, sort, transports, nbConnections}));
-    const resourcePath = `https://trip-sort-api.herokuapp.com/api/trip-sorter/trips?from=${from}&to=${to}&sort=${sort}&transports=${transports.join(',')}&nbConnections=${nbConnections}`;
+    // const resourcePath = `https://trip-sorter-api.herokuapp.com/api/trip-sorter/trips?from=${from}&to=${to}&sort=${sort}&transports=${transports.join(',')}&nbConnections=${nbConnections}`;
+    const resourcePath = `/api/trip-sorter/trips?from=${from}&to=${to}&sort=${sort}&transports=${transports.join(',')}&nbConnections=${nbConnections}`;
 
     return fetch(resourcePath)
       .then(response => {
